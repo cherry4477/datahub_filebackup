@@ -1,17 +1,16 @@
 #!/bin/bash
 
-EXCLUDE_OPT=
-PASS_OPT=
-
 if [ "$1" == "backup" ]; then
     if [ -n "$2" ]; then
-        file_list=$2
 
 	file_name=fileback-$(date +%Y-%m-%d ).tar.gz
+	
+	echo "filename:$file_name"
+	find /filebackup -mtime -1 -type f  | xargs ls
 
-        tar -czf /tmp/$file_name $file_list
+        tar -czf /tmp/$file_name `find /filebackup -mtime -1 -type f  | xargs ls` 
 
-	aws s3 cp /tmp/$file_name s3://$S3_BUCKET/$S3_PATH/$file_name
+	aws s3 cp /tmp/$file_name s3://$S3_BUCKET/$file_name
 	
 	if [ $? == 0 ]; then
                 rm /tmp/$file_name
